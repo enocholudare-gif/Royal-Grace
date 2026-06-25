@@ -31,7 +31,7 @@ const navigation = [
     { label: 'Schedule', href: '/caregiver/schedule', icon: CalendarIcon },
     { label: 'Visit Reports', href: '/caregiver/visits', icon: ClipboardIcon },
     { label: 'Attendance', href: '/caregiver/attendance', icon: ClockIcon },
-    { label: 'Messages', href: '/caregiver/messages', icon: ChatIcon, badge: '2' },
+    { label: 'Messages', href: '/messages', icon: ChatBubbleOvalLeftIcon },
 ];
 </script>
 

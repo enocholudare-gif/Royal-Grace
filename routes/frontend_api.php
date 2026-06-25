@@ -65,4 +65,14 @@ Route::middleware('auth')->group(function (): void {
     // Payments (Write)
     Route::post('/payments/bookings/{booking}/initialize', [PaymentController::class, 'initializeBookingPayment'])->name('frontend.payments.booking.initialize');
     Route::post('/payments/verify', [PaymentController::class, 'verify'])->name('frontend.payments.verify');
+
+    // Messaging
+    Route::prefix('messages')->name('frontend.messages.')->group(function (): void {
+        Route::get('/conversations', [\App\Http\Controllers\Messaging\ConversationController::class, 'index'])->name('conversations.index');
+        Route::post('/conversations', [\App\Http\Controllers\Messaging\ConversationController::class, 'store'])->name('conversations.store');
+        Route::get('/conversations/{conversation}', [\App\Http\Controllers\Messaging\ConversationController::class, 'show'])->name('conversations.show');
+        Route::patch('/conversations/{conversation}/read', [\App\Http\Controllers\Messaging\ConversationController::class, 'markRead'])->name('conversations.read');
+        Route::get('/conversations/{conversation}/messages', [\App\Http\Controllers\Messaging\MessageController::class, 'index'])->name('history');
+        Route::post('/conversations/{conversation}/messages', [\App\Http\Controllers\Messaging\MessageController::class, 'store'])->name('send');
+    });
 });

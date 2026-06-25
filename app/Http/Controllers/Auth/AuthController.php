@@ -28,24 +28,41 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(LoginRequest $request, LoginUserService $service): JsonResponse
+    public function login(LoginRequest $request, LoginUserService $service)
     {
         $result = $service->handle($request->validated());
 
-        return response()->json([
-            'message' => 'Login successful.',
-            'user' => $result['user'],
-            'token' => $result['token'],
-        ]);
+        if ($request->wantsJson() && !$request->inertia()) {
+            return response()->json([
+                'message' => 'Login successful.',
+                'user' => $result['user'],
+                'token' => $result['token'],
+            ]);
+        }
+
+        $roleSlug = strtolower($result['user']->role?->slug ?? '');
+        
+        $dashboard = match(true) {
+            str_contains($roleSlug, 'admin') => '/admin/dashboard',
+            str_contains($roleSlug, 'caregiver') => '/caregiver/dashboard',
+            str_contains($roleSlug, 'family') => '/family/dashboard',
+            default => '/client/dashboard',
+        };
+
+        return redirect()->intended($dashboard);
     }
 
-    public function logout(Request $request, LogoutUserService $service): JsonResponse
+    public function logout(Request $request, LogoutUserService $service)
     {
         $service->handle($request->user());
 
-        return response()->json([
-            'message' => 'Logout successful.',
-        ]);
+        if ($request->wantsJson() && !$request->inertia()) {
+            return response()->json([
+                'message' => 'Logout successful.',
+            ]);
+        }
+
+        return redirect()->route('login');
     }
 
     public function forgotPassword(ForgotPasswordRequest $request, ForgotPasswordService $service): JsonResponse

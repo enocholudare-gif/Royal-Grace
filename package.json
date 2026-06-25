@@ -22,6 +22,9 @@
         "@fullcalendar/vue3": "^6.1.21",
         "@inertiajs/vue3": "^3.4.0",
         "@vitejs/plugin-vue": "^6.0.7",
+        "laravel-echo": "^2.3.7",
+        "pinia": "^3.0.4",
+        "pusher-js": "^8.5.0",
         "vue": "^3.5.38"
     }
 }

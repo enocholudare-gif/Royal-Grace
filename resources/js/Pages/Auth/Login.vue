@@ -1,63 +1,38 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
-import axios from 'axios';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthAlert from '../../Components/Auth/AuthAlert.vue';
 import AuthCard from '../../Components/Auth/AuthCard.vue';
 import AuthInput from '../../Components/Auth/AuthInput.vue';
 import AuthPasswordInput from '../../Components/Auth/AuthPasswordInput.vue';
-import { useApiForm } from '../../Composables/useApiForm';
 import GuestLayout from '../../Layouts/GuestLayout.vue';
+import { ref } from 'vue';
 
 defineOptions({ layout: GuestLayout });
 
-const { form, processing, message, messageTone, submit, setMessage, errorFor } = useApiForm({
+const form = useForm({
     email: '',
     password: '',
     device_name: 'web',
 });
 
-const handleSubmit = async () => {
-    try {
-        const response = await submit({
-            url: '/login',
-            method: 'post',
-        });
+const message = ref('');
+const messageTone = ref('info');
 
-        const { token, user, message: successMessage } = response.data;
-
-        if (token) {
-            localStorage.setItem('auth_token', token);
-            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+const handleSubmit = () => {
+    form.post('/login', {
+        onError: () => {
+            if (form.errors.email) {
+                messageTone.value = 'danger';
+                message.value = form.errors.email;
+            } else {
+                messageTone.value = 'danger';
+                message.value = 'Invalid credentials. Please try again.';
+            }
+        },
+        onSuccess: () => {
+            // Success is handled by Inertia redirect
         }
-
-        if (successMessage) {
-            localStorage.setItem('auth_flash_success', successMessage);
-        }
-
-        const roleName = user?.role?.name ?? user?.primary_role?.name ?? user?.role ?? '';
-        const normalizedRole = String(roleName).toLowerCase();
-
-        if (normalizedRole.includes('super admin') || normalizedRole.includes('admin')) {
-            window.location.href = '/admin/dashboard';
-            return;
-        }
-
-        if (normalizedRole.includes('caregiver')) {
-            window.location.href = '/caregiver/dashboard';
-            return;
-        }
-
-        if (normalizedRole.includes('family')) {
-            window.location.href = '/family/dashboard';
-            return;
-        }
-
-        window.location.href = '/client/dashboard';
-    } catch (error) {
-        if (error.response?.status === 401) {
-            setMessage('Invalid credentials. Please try again.', 'danger');
-        }
-    }
+    });
 };
 </script>
 
@@ -84,7 +59,7 @@ const handleSubmit = async () => {
                 placeholder="you@example.com"
                 autocomplete="email"
                 required
-                :error="errorFor('email')"
+                :error="form.errors.email"
             />
 
             <AuthPasswordInput
@@ -94,7 +69,7 @@ const handleSubmit = async () => {
                 placeholder="Enter your password"
                 autocomplete="current-password"
                 required
-                :error="errorFor('password')"
+                :error="form.errors.password"
             />
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -102,8 +77,8 @@ const handleSubmit = async () => {
                     Forgot your password?
                 </Link>
 
-                <button type="submit" class="btn-primary" :disabled="processing">
-                    {{ processing ? 'Signing in...' : 'Sign in' }}
+                <button type="submit" class="btn-primary" :disabled="form.processing">
+                    {{ form.processing ? 'Signing in...' : 'Sign in' }}
                 </button>
             </div>
         </form>
