@@ -44,6 +44,9 @@ class LowRatingAlertNotification extends BaseQueuedNotification
     {
         return [
             'type' => $this->notificationType(),
+            'title' => 'Low Rating Alert',
+            'description' => "A {$this->rating->rating}-star review needs attention.",
+            'url' => "/admin/ratings",
             'rating_id' => $this->rating->id,
             'booking_id' => $this->rating->booking_id,
             'caregiver_id' => $this->rating->caregiver_id,

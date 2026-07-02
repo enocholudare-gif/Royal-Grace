@@ -18,9 +18,9 @@ const dashboard = ref({
 });
 
 const dashboardColumns = [
-    { key: 'booking_number', label: 'Booking' },
-    { key: 'client', label: 'Client' },
-    { key: 'service', label: 'Service' },
+    { key: 'reference', label: 'Booking' },
+    { key: 'subject', label: 'Client' },
+    { key: 'category', label: 'Service' },
     { key: 'status', label: 'Status' },
     { key: 'date', label: 'Date' },
 ];
@@ -28,10 +28,14 @@ const dashboardColumns = [
 const { loadAdminDashboard, loading, error } = useDashboardData();
 
 const flashMessage = computed(() => {
-    const value = localStorage.getItem('auth_flash_success');
-
-    if (value) {
-        localStorage.removeItem('auth_flash_success');
+    let value = null;
+    try {
+        value = localStorage.getItem('auth_flash_success');
+        if (value) {
+            localStorage.removeItem('auth_flash_success');
+        }
+    } catch (e) {
+        // ignore
     }
 
     return value;

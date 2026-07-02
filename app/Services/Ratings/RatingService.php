@@ -23,10 +23,23 @@ class RatingService
         return $this->ratings->paginateForViewer($viewer, $filters, $perPage);
     }
 
+    public function statistics(User $viewer): array
+    {
+        return $this->ratings->getStatistics($viewer);
+    }
+
     public function submit(User $clientUser, Booking $booking, array $data): Rating
     {
         return DB::transaction(function () use ($clientUser, $booking, $data): Rating {
             $client = $clientUser->client;
+
+            if (! $client && $clientUser->hasRole('family-member')) {
+                // Check if family member is linked to the booking's client
+                $isLinked = $clientUser->familyMember()->where('client_id', $booking->client_id)->exists();
+                if ($isLinked) {
+                    $client = $booking->client;
+                }
+            }
 
             if (! $client || $booking->client_id !== $client->id) {
                 throw ValidationException::withMessages([

@@ -96,7 +96,7 @@ class PaymentService
             'provider' => 'paystack',
             'provider_payment_intent_id' => $reference,
             'amount' => $amount,
-            'currency' => 'NGN',
+            'currency' => 'CAD',
             'status' => 'pending',
             'payment_type' => $paymentType,
             'metadata' => [
@@ -109,7 +109,7 @@ class PaymentService
             $response = $this->paystack->initializeTransaction([
                 'email' => $payer->email,
                 'amount' => $this->toKobo($amount),
-                'currency' => 'NGN',
+                'currency' => 'CAD',
                 'reference' => $reference,
                 'callback_url' => config('services.paystack.callback_url'),
                 'metadata' => [

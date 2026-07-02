@@ -11,9 +11,9 @@ defineProps({
 });
 
 const formatCurrency = (value) =>
-    new Intl.NumberFormat('en-NG', {
+    new Intl.NumberFormat('en-CA', {
         style: 'currency',
-        currency: 'NGN',
+        currency: 'CAD',
         maximumFractionDigits: 0,
     }).format(Number(value || 0));
 
@@ -24,7 +24,7 @@ const formatDateTime = (value) => {
 
     if (Number.isNaN(date.getTime())) return '—';
 
-    return new Intl.DateTimeFormat('en-NG', {
+    return new Intl.DateTimeFormat('en-CA', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',

@@ -158,7 +158,7 @@ const closeModal = () => {
 
 const formatDateTime = (dt) => {
     if (!dt) return '—';
-    return new Intl.DateTimeFormat('en-NG', {
+    return new Intl.DateTimeFormat('en-CA', {
         weekday: 'short',
         month: 'short',
         day: 'numeric',

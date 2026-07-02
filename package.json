@@ -7,24 +7,40 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@hookform/resolvers": "^3.6.0",
         "@tailwindcss/vite": "^4.0.0",
+        "@tanstack/react-query": "^5.28.0",
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "@vitejs/plugin-react": "^4.3.1",
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",
+        "framer-motion": "^11.7.2",
         "laravel-vite-plugin": "^2.0.0",
+        "react-hook-form": "^7.53.2",
+        "react-router-dom": "^7.0.0",
         "tailwindcss": "^4.0.0",
-        "vite": "^7.0.7"
+        "typescript": "^5.5.0",
+        "vite": "^7.0.7",
+        "zod": "^3.23.8"
     },
     "dependencies": {
         "@fullcalendar/core": "^6.1.21",
         "@fullcalendar/daygrid": "^6.1.21",
         "@fullcalendar/interaction": "^6.1.21",
+        "@fullcalendar/react": "^6.1.21",
         "@fullcalendar/timegrid": "^6.1.21",
-        "@fullcalendar/vue3": "^6.1.21",
-        "@inertiajs/vue3": "^3.4.0",
-        "@vitejs/plugin-vue": "^6.0.7",
+        "@inertiajs/react": "^2.3.27",
+        "@reduxjs/toolkit": "^2.12.0",
+        "@stripe/react-stripe-js": "^6.7.0",
+        "@stripe/stripe-js": "^9.9.0",
+        "date-fns": "^4.4.0",
         "laravel-echo": "^2.3.7",
-        "pinia": "^3.0.4",
+        "lucide-react": "^1.22.0",
         "pusher-js": "^8.5.0",
-        "vue": "^3.5.38"
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-redux": "^9.3.0",
+        "zustand": "^5.0.14"
     }
 }

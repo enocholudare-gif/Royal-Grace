@@ -115,7 +115,7 @@ class MessagingService
     protected function ensureAllowedParticipants(User $creator, array $participantIds): void
     {
         $users = User::query()->with('role')->whereIn('id', $participantIds)->get();
-        $allowedRoles = ['super-admin', 'admin', 'client', 'family-member'];
+        $allowedRoles = ['super-admin', 'admin', 'client', 'family-member', 'caregiver'];
 
         if ($users->count() !== count($participantIds)) {
             throw ValidationException::withMessages([
@@ -125,11 +125,11 @@ class MessagingService
 
         if ($users->contains(fn (User $user) => ! in_array($user->role?->slug, $allowedRoles, true))) {
             throw ValidationException::withMessages([
-                'participant_ids' => ['Only clients, family members, and admins can participate in messaging.'],
+                'participant_ids' => ['Only clients, family members, caregivers, and admins can participate in messaging.'],
             ]);
         }
 
-        if (! $creator->hasPermission('messages.manage') && ! in_array($creator->role?->slug, ['client', 'family-member'], true)) {
+        if (! $creator->hasPermission('messages.manage') && ! in_array($creator->role?->slug, ['client', 'family-member', 'caregiver'], true)) {
             throw ValidationException::withMessages([
                 'participant_ids' => ['User cannot create this conversation.'],
             ]);

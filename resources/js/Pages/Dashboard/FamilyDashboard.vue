@@ -14,15 +14,15 @@ const dashboard = ref({
     metrics: [],
     chartSeries: [],
     notifications: [],
-    visits: [],
+    activity: [],
 });
 
 const visitColumns = [
-    { key: 'booking', label: 'Booking' },
-    { key: 'caregiver', label: 'Caregiver' },
-    { key: 'condition', label: 'Client Condition' },
-    { key: 'arrival', label: 'Arrival' },
-    { key: 'departure', label: 'Departure' },
+    { key: 'reference', label: 'Booking' },
+    { key: 'subject', label: 'Caregiver' },
+    { key: 'category', label: 'Client Condition' },
+    { key: 'status', label: 'Status' },
+    { key: 'date', label: 'Date' },
 ];
 
 const { loadFamilyDashboard, loading, error } = useDashboardData();
@@ -71,7 +71,7 @@ onMounted(async () => {
             title="Completed visits"
             subtitle="Latest visit outcomes and care observations."
             :columns="visitColumns"
-            :rows="dashboard.visits"
+            :rows="dashboard.activity"
         />
 
         <div v-if="loading" class="card">

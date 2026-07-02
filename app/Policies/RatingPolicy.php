@@ -11,7 +11,9 @@ class RatingPolicy
     {
         return $user->hasPermission('ratings.view')
             || $user->hasPermission('ratings.view.own')
-            || $user->role?->slug === 'caregiver';
+            || $user->hasRole('caregiver')
+            || $user->hasRole('family-member')
+            || $user->hasRole('client');
     }
 
     public function view(User $user, Rating $rating): bool
@@ -24,11 +26,13 @@ class RatingPolicy
             return true;
         }
 
-        return $user->role?->slug === 'caregiver' && $user->caregiver?->id === $rating->caregiver_id;
+        return $user->hasRole('caregiver') && $user->caregiver?->id === $rating->caregiver_id;
     }
 
     public function create(User $user): bool
     {
-        return $user->hasPermission('ratings.create');
+        return $user->hasPermission('ratings.create')
+            || $user->hasRole('client')
+            || $user->hasRole('family-member');
     }
 }

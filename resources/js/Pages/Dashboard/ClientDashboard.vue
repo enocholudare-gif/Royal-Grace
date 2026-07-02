@@ -18,9 +18,9 @@ const dashboard = ref({
 });
 
 const bookingColumns = [
-    { key: 'booking_number', label: 'Booking' },
-    { key: 'service', label: 'Service' },
-    { key: 'caregiver', label: 'Caregiver' },
+    { key: 'reference', label: 'Booking' },
+    { key: 'subject', label: 'Service' },
+    { key: 'category', label: 'Caregiver' },
     { key: 'status', label: 'Status' },
     { key: 'date', label: 'Date' },
 ];

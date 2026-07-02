@@ -13,5 +13,7 @@ interface RatingRepositoryInterface
 
     public function findForBooking(Booking $booking, int $clientId): ?Rating;
 
+    public function getStatistics(User $viewer): array;
+
     public function create(array $data): Rating;
 }

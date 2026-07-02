@@ -17,9 +17,9 @@ defineProps({
 const emit = defineEmits(['select']);
 
 const formatCurrency = (value) =>
-    new Intl.NumberFormat('en-NG', {
+    new Intl.NumberFormat('en-CA', {
         style: 'currency',
-        currency: 'NGN',
+        currency: 'CAD',
         maximumFractionDigits: 0,
     }).format(Number(value || 0));
 </script>

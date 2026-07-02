@@ -6,9 +6,10 @@ use App\Models\NotificationPreference;
 use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Notification;
 
-abstract class BaseQueuedNotification extends Notification implements ShouldQueue
+abstract class BaseQueuedNotification extends Notification implements ShouldQueue, ShouldBroadcast
 {
     use Queueable;
 
@@ -21,7 +22,7 @@ abstract class BaseQueuedNotification extends Notification implements ShouldQueu
             ->where('notification_type', $this->notificationType())
             ->first();
 
-        $channels = ['database'];
+        $channels = ['database', 'broadcast'];
 
         if ($preference?->email_enabled ?? true) {
             $channels[] = 'mail';

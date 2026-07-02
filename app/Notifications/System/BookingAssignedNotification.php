@@ -41,6 +41,9 @@ class BookingAssignedNotification extends BaseQueuedNotification
     {
         return [
             'type' => $this->notificationType(),
+            'title' => 'Booking Assigned',
+            'description' => "Booking {$this->booking->booking_number} has been assigned.",
+            'url' => "/family/bookings",
             'booking_id' => $this->booking->id,
             'booking_number' => $this->booking->booking_number,
         ];

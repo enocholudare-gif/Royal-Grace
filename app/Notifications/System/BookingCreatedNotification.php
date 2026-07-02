@@ -43,6 +43,8 @@ class BookingCreatedNotification extends BaseQueuedNotification
         return [
             'type' => $this->notificationType(),
             'title' => $title,
+            'description' => "Booking {$this->booking->booking_number} has been created.",
+            'url' => "/family/bookings",
             'booking_id' => $this->booking->id,
             'booking_number' => $this->booking->booking_number,
         ];

@@ -2,76 +2,130 @@
 
 namespace App\Services\Support;
 
-use App\Events\Support\EmergencySupportRequested;
 use App\Models\SupportTicket;
-use App\Models\User;
-use App\Repositories\Contracts\TicketRepositoryInterface;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Models\SupportTicketMessage;
+use App\Models\SupportTicketAttachment;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SupportService
 {
-    public function __construct(
-        protected TicketRepositoryInterface $tickets
-    ) {
-    }
-
-    public function faqs(): array
+    public function createTicket(array $data, $user)
     {
-        return config('faq', []);
-    }
+        return DB::transaction(function () use ($data, $user) {
+            $ticketNumber = 'TKT-' . strtoupper(Str::random(8));
 
-    public function history(User $viewer, array $filters = [], int $perPage = 15): LengthAwarePaginator
-    {
-        return $this->tickets->paginateForViewer($viewer, $filters, $perPage);
-    }
-
-    public function create(User $user, array $data): SupportTicket
-    {
-        return DB::transaction(function () use ($user, $data): SupportTicket {
-            $ticket = $this->tickets->create([
-                'ticket_number' => $this->generateTicketNumber(),
+            $ticket = SupportTicket::create([
+                'ticket_number' => $ticketNumber,
                 'user_id' => $user->id,
-                'booking_id' => $data['booking_id'] ?? null,
-                'assigned_to' => $data['assigned_to'] ?? null,
+                'category' => $data['category'] ?? 'general',
                 'subject' => $data['subject'],
                 'description' => $data['description'],
                 'priority' => $data['priority'] ?? 'medium',
                 'status' => 'open',
             ]);
 
-            if ($ticket->priority === 'emergency') {
-                EmergencySupportRequested::dispatch($ticket);
+            if (isset($data['attachments'])) {
+                $this->handleAttachments($ticket, null, $data['attachments'], $user);
             }
 
-            return $ticket;
+            // Load relations needed for notifications
+            $ticket->load('user');
+
+            if ($ticket->priority === 'emergency') {
+                \App\Events\Support\EmergencySupportRequested::dispatch($ticket);
+            } else {
+                $admins = \App\Models\User::whereHas('role', fn ($query) => $query->whereIn('slug', ['super-admin', 'admin']))->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new \App\Notifications\Support\NewSupportTicketNotification($ticket));
+                }
+            }
+
+            return $ticket->load('attachments');
         });
     }
 
-    public function escalate(User $user, SupportTicket $ticket, ?int $assigneeId = null): SupportTicket
+    public function replyToTicket(SupportTicket $ticket, array $data, $user)
     {
-        return $this->tickets->update($ticket, [
-            'priority' => 'emergency',
-            'status' => 'in_progress',
-            'assigned_to' => $assigneeId,
-        ]);
+        return DB::transaction(function () use ($ticket, $data, $user) {
+            $isAdminReply = $user->hasRole(['admin', 'super-admin']);
+
+            $message = SupportTicketMessage::create([
+                'support_ticket_id' => $ticket->id,
+                'user_id' => $user->id,
+                'message' => $data['message'],
+                'is_admin_reply' => $isAdminReply,
+            ]);
+
+            // Update ticket status if it's an admin reply or user reply
+            if ($isAdminReply && $ticket->status !== 'resolved' && $ticket->status !== 'closed') {
+                $ticket->update(['status' => 'in_progress']);
+            } elseif (!$isAdminReply && $ticket->status === 'resolved') {
+                $ticket->update(['status' => 'open']);
+            }
+
+            if (isset($data['attachments'])) {
+                $this->handleAttachments($ticket, $message, $data['attachments'], $user);
+            }
+
+            $message->load('attachments', 'user');
+
+            // Send notification
+            if ($isAdminReply) {
+                if ($ticket->user) {
+                    $ticket->user->notify(new \App\Notifications\Support\NewSupportReplyNotification($ticket, $message));
+                }
+            } else {
+                if ($ticket->assignee) {
+                    $ticket->assignee->notify(new \App\Notifications\Support\NewSupportReplyNotification($ticket, $message));
+                } else {
+                    $admins = \App\Models\User::whereHas('role', fn ($query) => $query->whereIn('slug', ['super-admin', 'admin']))->get();
+                    foreach ($admins as $admin) {
+                        $admin->notify(new \App\Notifications\Support\NewSupportReplyNotification($ticket, $message));
+                    }
+                }
+            }
+
+            return $message;
+        });
     }
 
-    public function resolve(SupportTicket $ticket): SupportTicket
+    public function handleAttachments(SupportTicket $ticket, ?SupportTicketMessage $message, array $files, $user)
     {
-        return $this->tickets->update($ticket, [
-            'status' => 'resolved',
-            'resolved_at' => now(),
-        ]);
+        foreach ($files as $file) {
+            $path = $file->store('support_attachments', 'public');
+
+            SupportTicketAttachment::create([
+                'support_ticket_id' => $ticket->id,
+                'support_ticket_message_id' => $message ? $message->id : null,
+                'user_id' => $user->id,
+                'file_path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'file_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+            ]);
+        }
     }
 
-    protected function generateTicketNumber(): string
+    public function updateTicketStatus(SupportTicket $ticket, string $status, ?string $priority = null, ?int $assignedTo = null)
     {
-        do {
-            $number = 'SUP-' . now()->format('ymd') . '-' . Str::upper(Str::random(6));
-        } while (SupportTicket::query()->where('ticket_number', $number)->exists());
+        $data = ['status' => $status];
 
-        return $number;
+        if ($priority) {
+            $data['priority'] = $priority;
+        }
+
+        if ($assignedTo) {
+            $data['assigned_to'] = $assignedTo;
+        }
+
+        if (in_array($status, ['resolved', 'closed'])) {
+            $data['resolved_at'] = now();
+        }
+
+        $ticket->update($data);
+
+        return $ticket;
     }
 }

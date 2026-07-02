@@ -43,6 +43,9 @@ class NewMessageNotification extends BaseQueuedNotification
     {
         return [
             'type' => $this->notificationType(),
+            'title' => 'New Message',
+            'description' => "You have a new message.",
+            'url' => "/messages?conversation={$this->message->conversation_id}",
             'conversation_id' => $this->message->conversation_id,
             'message_id' => $this->message->id,
             'sender_user_id' => $this->message->sender_user_id,

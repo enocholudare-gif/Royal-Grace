@@ -22,9 +22,11 @@ class EloquentRatingRepository implements RatingRepositoryInterface
             return $query->latest('submitted_at')->paginate($perPage);
         }
 
-        if ($viewer->hasPermission('ratings.view.own')) {
+        if ($viewer->hasRole('client') || $viewer->hasPermission('ratings.view.own')) {
             $query->where('client_id', $viewer->client?->id ?: 0);
-        } elseif ($viewer->role?->slug === 'caregiver') {
+        } elseif ($viewer->hasRole('family-member')) {
+            $query->where('client_id', $viewer->familyMember?->client_id ?: 0);
+        } elseif ($viewer->hasRole('caregiver')) {
             $query->where('caregiver_id', $viewer->caregiver?->id ?: 0);
         } else {
             $query->whereRaw('1 = 0');
@@ -44,5 +46,43 @@ class EloquentRatingRepository implements RatingRepositoryInterface
     public function create(array $data): Rating
     {
         return Rating::query()->create($data)->fresh(['booking', 'client.user', 'caregiver.user']);
+    }
+
+    public function getStatistics(User $viewer): array
+    {
+        $query = Rating::query();
+
+        if ($viewer->hasPermission('ratings.view')) {
+            // No where clause needed
+        } elseif ($viewer->hasRole('client') || $viewer->hasPermission('ratings.view.own')) {
+            $query->where('client_id', $viewer->client?->id ?: 0);
+        } elseif ($viewer->hasRole('family-member')) {
+            $query->where('client_id', $viewer->familyMember?->client_id ?: 0);
+        } elseif ($viewer->hasRole('caregiver')) {
+            $query->where('caregiver_id', $viewer->caregiver?->id ?: 0);
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+
+        $total = (clone $query)->count();
+        $average = (clone $query)->avg('rating') ?: 0.0;
+        
+        $distribution = (clone $query)
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+            
+        // Ensure all 1-5 keys exist
+        $distributionMap = [];
+        for ($i = 5; $i >= 1; $i--) {
+            $distributionMap[$i] = $distribution[$i] ?? 0;
+        }
+
+        return [
+            'total_reviews' => $total,
+            'average_rating' => round($average, 1),
+            'distribution' => $distributionMap,
+        ];
     }
 }

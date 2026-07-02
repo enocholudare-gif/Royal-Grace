@@ -4,7 +4,7 @@ namespace App\Repositories\Contracts;
 
 interface ReportRepositoryInterface
 {
-    public function dashboardMetrics(): array;
+    public function dashboardMetrics(array $filters = []): array;
 
     public function revenueReport(array $filters = []): array;
 

@@ -180,7 +180,7 @@ class AdminDashboardTest extends TestCase
             'provider' => 'paystack',
             'provider_payment_intent_id' => 'DBPAY-' . uniqid(),
             'amount' => $amount,
-            'currency' => 'NGN',
+            'currency' => 'CAD',
             'status' => 'succeeded',
             'payment_type' => 'one_time',
             'paid_at' => $paidAt,

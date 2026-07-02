@@ -14,6 +14,7 @@ class StoreRatingRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'booking_id' => ['required', 'integer', 'exists:bookings,id'],
             'rating' => ['required', 'integer', 'between:1,5'],
             'comment' => ['nullable', 'string', 'max:5000'],
         ];

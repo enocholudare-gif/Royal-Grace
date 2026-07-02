@@ -11,13 +11,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Laravel\Cashier\Billable;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
+    use Billable;
 
     protected $fillable = [
         'role_id',
@@ -39,6 +40,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
+    protected $appends = ['role_slug'];
+
     protected function casts(): array
     {
         return [
@@ -47,6 +50,11 @@ class User extends Authenticatable implements MustVerifyEmail
             'last_login_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
+    }
+
+    public function getRoleSlugAttribute(): ?string
+    {
+        return $this->attributes['role_id'] ? optional($this->role)->slug : null;
     }
 
     public function role(): BelongsTo

@@ -60,4 +60,18 @@ class NotificationManagementService
             ]
         );
     }
+
+    public function delete(User $user, string $notificationId): void
+    {
+        $user->notifications()->where('id', $notificationId)->delete();
+    }
+
+    public function bulkDelete(User $user, array $notificationIds): void
+    {
+        if (empty($notificationIds)) {
+            return;
+        }
+        
+        $user->notifications()->whereIn('id', $notificationIds)->delete();
+    }
 }

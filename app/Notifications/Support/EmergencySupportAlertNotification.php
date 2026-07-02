@@ -43,6 +43,9 @@ class EmergencySupportAlertNotification extends BaseQueuedNotification
     {
         return [
             'type' => $this->notificationType(),
+            'title' => 'Emergency Support Alert',
+            'description' => "Ticket {$this->ticket->ticket_number} requires immediate attention.",
+            'url' => "/admin/support",
             'ticket_id' => $this->ticket->id,
             'ticket_number' => $this->ticket->ticket_number,
             'priority' => $this->ticket->priority,

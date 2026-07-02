@@ -17,7 +17,12 @@ class EloquentMessagingRepository implements MessagingRepositoryInterface
             ->with(['creator', 'participants', 'booking', 'messages' => fn ($query) => $query->latest('sent_at')->limit(1)])
             ->when($filters['type'] ?? null, fn ($query, string $type) => $query->where('type', $type))
             ->when($filters['booking_id'] ?? null, fn ($query, int $bookingId) => $query->where('booking_id', $bookingId))
-            ->when($filters['viewer'] ?? null, fn ($query, User $viewer) => $query->whereHas('participants', fn ($query) => $query->where('users.id', $viewer->id)))
+            ->when($filters['viewer'] ?? null, function ($query, User $viewer) {
+                if (in_array($viewer->role?->slug, ['admin', 'super-admin'])) {
+                    return $query;
+                }
+                return $query->whereHas('participants', fn ($q) => $q->where('users.id', $viewer->id));
+            })
             ->latest('last_message_at')
             ->paginate($perPage);
     }

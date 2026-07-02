@@ -14,15 +14,15 @@ const dashboard = ref({
     metrics: [],
     chartSeries: [],
     notifications: [],
-    visits: [],
+    activity: [],
 });
 
 const visitColumns = [
-    { key: 'booking', label: 'Booking' },
-    { key: 'client', label: 'Client' },
-    { key: 'arrival', label: 'Arrival' },
-    { key: 'departure', label: 'Departure' },
+    { key: 'reference', label: 'Booking' },
+    { key: 'subject', label: 'Client' },
+    { key: 'category', label: 'Visit Status' },
     { key: 'status', label: 'Status' },
+    { key: 'date', label: 'Date' },
 ];
 
 const { loadCaregiverDashboard, loading, error } = useDashboardData();
@@ -71,7 +71,7 @@ onMounted(async () => {
             title="Visit activity"
             subtitle="Check-in, check-out, and report progress."
             :columns="visitColumns"
-            :rows="dashboard.visits"
+            :rows="dashboard.activity"
         >
             <template #status="{ row }">
                 <span class="status-indicator" :class="{

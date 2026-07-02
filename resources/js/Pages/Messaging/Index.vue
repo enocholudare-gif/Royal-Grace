@@ -1,10 +1,24 @@
-<script setup>
-import { Head } from '@inertiajs/vue3';
-import { ref, onMounted, computed, watch, nextTick } from 'vue';
+<script>
 import AdminLayout from '../../Layouts/AdminLayout.vue';
 import CaregiverLayout from '../../Layouts/CaregiverLayout.vue';
 import FamilyLayout from '../../Layouts/FamilyLayout.vue';
 import ClientLayout from '../../Layouts/ClientLayout.vue';
+
+export default {
+    layout: (h, page) => {
+        const role = page.props.auth?.user?.role;
+        let Layout = ClientLayout;
+        if (['admin', 'super-admin'].includes(role)) Layout = AdminLayout;
+        else if (role === 'caregiver') Layout = CaregiverLayout;
+        else if (role === 'family-member') Layout = FamilyLayout;
+        
+        return h(Layout, () => h(page));
+    }
+}
+</script>
+<script setup>
+import { Head } from '@inertiajs/vue3';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 
 // Composables & Stores
 import { useMessaging } from '../../Composables/useMessaging';
@@ -22,17 +36,6 @@ import LoadingSkeleton from '../../Components/Messaging/LoadingSkeleton.vue';
 
 const { currentUser } = useMessaging();
 const conversationStore = useConversationStore();
-
-// Dynamically select layout based on user role
-const layout = computed(() => {
-    const role = currentUser.value?.role;
-    if (['admin', 'super-admin'].includes(role)) return AdminLayout;
-    if (role === 'caregiver') return CaregiverLayout;
-    if (role === 'family-member') return FamilyLayout;
-    return ClientLayout;
-});
-
-defineOptions({ layout: layout.value });
 
 // Local State
 const isMobileListVisible = ref(true);

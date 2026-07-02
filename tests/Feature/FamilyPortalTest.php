@@ -36,7 +36,7 @@ class FamilyPortalTest extends TestCase
 
         Sanctum::actingAs($familyUser);
 
-        $this->getJson('/api/family-portal/bookings/upcoming')
+        $this->getJson('/api/family/bookings')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $linkedBooking->id);
@@ -61,7 +61,7 @@ class FamilyPortalTest extends TestCase
 
         Sanctum::actingAs($familyUser);
 
-        $this->getJson('/api/family-portal/visits/completed')
+        $this->getJson('/api/family/visits')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.booking_id', $booking->id);
@@ -74,7 +74,7 @@ class FamilyPortalTest extends TestCase
 
         Sanctum::actingAs($familyUser);
 
-        $this->getJson('/api/family-portal/visits/completed')
+        $this->getJson('/api/family/visits')
             ->assertUnprocessable();
     }
 
@@ -96,7 +96,7 @@ class FamilyPortalTest extends TestCase
 
         Sanctum::actingAs($familyUser);
 
-        $this->getJson('/api/family-portal/invoices')
+        $this->getJson('/api/family/invoices')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
@@ -116,7 +116,7 @@ class FamilyPortalTest extends TestCase
 
         Sanctum::actingAs($familyUser);
 
-        $this->getJson('/api/family-portal/notifications')
+        $this->getJson('/api/family/notifications')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.data.message', 'Family alert');

@@ -31,10 +31,18 @@ class RatingController extends Controller
         return new RatingResource($rating->load(['booking', 'client.user', 'caregiver.user']));
     }
 
-    public function store(StoreRatingRequest $request, Booking $booking, RatingService $ratings): JsonResponse
+    public function statistics(RatingService $ratings): JsonResponse
     {
+        return response()->json($ratings->statistics(request()->user()));
+    }
+
+    public function store(StoreRatingRequest $request, RatingService $ratings): JsonResponse
+    {
+        $validated = $request->validated();
+        $booking = Booking::findOrFail($validated['booking_id']);
+
         return (new RatingResource(
-            $ratings->submit($request->user(), $booking, $request->validated())
+            $ratings->submit($request->user(), $booking, $validated)
         ))->response()->setStatusCode(201);
     }
 }

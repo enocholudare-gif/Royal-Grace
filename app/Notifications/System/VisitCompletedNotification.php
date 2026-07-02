@@ -41,6 +41,9 @@ class VisitCompletedNotification extends BaseQueuedNotification
     {
         return [
             'type' => $this->notificationType(),
+            'title' => 'Visit Completed',
+            'description' => "Visit for booking {$this->visitReport->booking?->booking_number} is complete.",
+            'url' => "/family/visits",
             'visit_report_id' => $this->visitReport->id,
             'booking_id' => $this->visitReport->booking_id,
         ];

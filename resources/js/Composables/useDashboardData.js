@@ -1,15 +1,13 @@
+import { useState, useCallback } from 'react';
 import axios from 'axios';
-import { computed, ref } from 'vue';
 
 const toArray = (payload) => {
     if (Array.isArray(payload)) {
         return payload;
     }
-
     if (Array.isArray(payload?.data)) {
         return payload.data;
     }
-
     return [];
 };
 
@@ -21,24 +19,21 @@ const toNumber = (value) => {
 const toStatus = (value) => String(value ?? '').trim().toLowerCase();
 
 const formatCurrency = (value) =>
-    new Intl.NumberFormat('en-NG', {
+    new Intl.NumberFormat('en-CA', {
         style: 'currency',
-        currency: 'NGN',
+        currency: 'CAD',
         maximumFractionDigits: 0,
     }).format(toNumber(value));
 
 const formatDate = (value) => {
     if (!value) {
-        return '—';
+        return '-';
     }
-
     const date = new Date(value);
-
     if (Number.isNaN(date.getTime())) {
-        return '—';
+        return '-';
     }
-
-    return new Intl.DateTimeFormat('en-NG', {
+    return new Intl.DateTimeFormat('en-CA', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
@@ -49,14 +44,11 @@ const formatDateTime = (value) => {
     if (!value) {
         return 'Recent';
     }
-
     const date = new Date(value);
-
     if (Number.isNaN(date.getTime())) {
         return 'Recent';
     }
-
-    return new Intl.DateTimeFormat('en-NG', {
+    return new Intl.DateTimeFormat('en-CA', {
         day: '2-digit',
         month: 'short',
         hour: '2-digit',
@@ -65,18 +57,18 @@ const formatDateTime = (value) => {
 };
 
 const bookingDate = (item) =>
-    item?.scheduled_date
-        || item?.service_date
-        || item?.visit_date
-        || item?.start_date
-        || item?.created_at;
+    item?.scheduled_date ||
+    item?.service_date ||
+    item?.visit_date ||
+    item?.start_date ||
+    item?.created_at;
 
 const paymentAmount = (item) =>
-    item?.amount
-        ?? item?.total_amount
-        ?? item?.amount_paid
-        ?? item?.invoice?.amount
-        ?? 0;
+    item?.amount ??
+    item?.total_amount ??
+    item?.amount_paid ??
+    item?.invoice?.amount ??
+    0;
 
 const normalizeNotifications = (items, fallbackTitle) =>
     items.map((item, index) => ({
@@ -95,8 +87,8 @@ const normalizeChart = (items, labelResolver, valueResolver) =>
     }));
 
 export function useDashboardData() {
-    const loading = ref(false);
-    const error = ref('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const request = async (url) => {
         const response = await axios.get(url, {
@@ -104,25 +96,24 @@ export function useDashboardData() {
                 Accept: 'application/json',
             },
         });
-
         return response.data;
     };
 
     const withLoadState = async (callback, fallbackError) => {
-        loading.value = true;
-        error.value = '';
-
+        setLoading(true);
+        setError('');
         try {
             return await callback();
         } catch (err) {
-            error.value = err.response?.data?.message || fallbackError;
+            const msg = err.response?.data?.message || fallbackError;
+            setError(msg);
             throw err;
         } finally {
-            loading.value = false;
+            setLoading(false);
         }
     };
 
-    const loadAdminDashboard = () =>
+    const loadAdminDashboard = useCallback(() =>
         withLoadState(async () => {
             const [bookingsPayload, paymentsPayload, notificationsPayload] = await Promise.all([
                 request('/bookings?per_page=8'),
@@ -162,9 +153,9 @@ export function useDashboardData() {
                     date: formatDate(bookingDate(item)),
                 })),
             };
-        }, 'Unable to load admin dashboard.');
+        }, 'Unable to load admin dashboard.'), []);
 
-    const loadCaregiverDashboard = () =>
+    const loadCaregiverDashboard = useCallback(() =>
         withLoadState(async () => {
             const [bookingsPayload, visitsPayload, notificationsPayload] = await Promise.all([
                 request('/bookings?per_page=8'),
@@ -202,9 +193,9 @@ export function useDashboardData() {
                     date: formatDate(item.arrival_time || item.created_at),
                 })),
             };
-        }, 'Unable to load caregiver dashboard.');
+        }, 'Unable to load caregiver dashboard.'), []);
 
-    const loadClientDashboard = () =>
+    const loadClientDashboard = useCallback(() =>
         withLoadState(async () => {
             const [bookingsPayload, paymentsPayload, notificationsPayload] = await Promise.all([
                 request('/bookings?per_page=8'),
@@ -238,15 +229,15 @@ export function useDashboardData() {
                     date: formatDate(bookingDate(item)),
                 })),
             };
-        }, 'Unable to load client dashboard.');
+        }, 'Unable to load client dashboard.'), []);
 
-    const loadFamilyDashboard = () =>
+    const loadFamilyDashboard = useCallback(() =>
         withLoadState(async () => {
             const [bookingsPayload, visitsPayload, invoicesPayload, notificationsPayload] = await Promise.all([
-                request('/family/bookings?per_page=8'),
-                request('/family/visits?per_page=8'),
-                request('/family/invoices?per_page=8'),
-                request('/family/notifications?per_page=8'),
+                request('/api/family/bookings?per_page=8'),
+                request('/api/family/visits?per_page=8'),
+                request('/api/family/invoices?per_page=8'),
+                request('/api/family/notifications?per_page=8'),
             ]);
 
             const bookings = toArray(bookingsPayload);
@@ -276,11 +267,11 @@ export function useDashboardData() {
                     date: formatDate(item.departure_time || item.arrival_time || item.created_at),
                 })),
             };
-        }, 'Unable to load family dashboard.');
+        }, 'Unable to load family dashboard.'), []);
 
     return {
-        loading: computed(() => loading.value),
-        error: computed(() => error.value),
+        loading,
+        error,
         loadAdminDashboard,
         loadCaregiverDashboard,
         loadClientDashboard,

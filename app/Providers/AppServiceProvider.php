@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +14,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $repositories = [
+            'Booking', 'Caregiver', 'Client', 'FamilyPortal', 'Messaging', 'Payment', 
+            'Pwa', 'Rating', 'Report', 'Service', 'Ticket', 'Visit'
+        ];
+
+        foreach ($repositories as $repository) {
+            $this->app->bind(
+                "App\\Repositories\\Contracts\\{$repository}RepositoryInterface",
+                "App\\Repositories\\Eloquent\\Eloquent{$repository}Repository"
+            );
+        }
+
+        Gate::define('viewReports', function (\App\Models\User $user) {
+            return $user->hasRole(['admin', 'super-admin']);
+        });
     }
 
     /**

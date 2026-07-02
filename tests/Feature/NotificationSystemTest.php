@@ -245,7 +245,7 @@ class NotificationSystemTest extends TestCase
             'provider' => 'paystack',
             'provider_payment_intent_id' => 'REF-' . uniqid(),
             'amount' => $booking->total_amount,
-            'currency' => 'NGN',
+            'currency' => 'CAD',
             'status' => 'succeeded',
             'payment_type' => 'one_time',
             'paid_at' => now(),

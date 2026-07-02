@@ -54,4 +54,30 @@ class NotificationController extends Controller
             $notifications->registerFcmToken($request->user(), $request->validated())
         );
     }
+
+    public function markAllRead(\Illuminate\Http\Request $request, NotificationManagementService $notifications): JsonResponse
+    {
+        $notifications->markAsRead($request->user());
+
+        return response()->json(['message' => 'All notifications marked as read.']);
+    }
+
+    public function destroy(\Illuminate\Http\Request $request, NotificationManagementService $notifications, string $id): JsonResponse
+    {
+        $notifications->delete($request->user(), $id);
+
+        return response()->json(['message' => 'Notification deleted.']);
+    }
+
+    public function bulkDestroy(\Illuminate\Http\Request $request, NotificationManagementService $notifications): JsonResponse
+    {
+        $request->validate([
+            'notification_ids' => ['required', 'array'],
+            'notification_ids.*' => ['string']
+        ]);
+
+        $notifications->bulkDelete($request->user(), $request->input('notification_ids'));
+
+        return response()->json(['message' => 'Notifications deleted.']);
+    }
 }

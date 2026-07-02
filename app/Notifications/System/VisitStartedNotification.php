@@ -41,6 +41,9 @@ class VisitStartedNotification extends BaseQueuedNotification
     {
         return [
             'type' => $this->notificationType(),
+            'title' => 'Visit Started',
+            'description' => "Caregiver checked in for booking {$this->visitReport->booking?->booking_number}.",
+            'url' => "/family/visits",
             'visit_report_id' => $this->visitReport->id,
             'booking_id' => $this->visitReport->booking_id,
         ];

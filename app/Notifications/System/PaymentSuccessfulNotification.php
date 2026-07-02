@@ -42,6 +42,9 @@ class PaymentSuccessfulNotification extends BaseQueuedNotification
     {
         return [
             'type' => $this->notificationType(),
+            'title' => 'Payment Successful',
+            'description' => "Payment of {$this->payment->currency} {$this->payment->amount} was successful.",
+            'url' => "/family/invoices",
             'payment_id' => $this->payment->id,
             'booking_id' => $this->payment->booking_id,
             'reference' => $this->payment->provider_payment_intent_id,

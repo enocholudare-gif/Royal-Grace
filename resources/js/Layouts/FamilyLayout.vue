@@ -6,6 +6,7 @@ import {
     HomeIcon,
     ReportIcon,
     WalletIcon,
+    ChatIcon,
 } from '../Components/Layout/icons';
 
 const props = defineProps({
@@ -31,6 +32,7 @@ const navigation = [
     { label: 'Upcoming Bookings', href: '/family/bookings', icon: CalendarIcon },
     { label: 'Visit Reports', href: '/family/reports', icon: ReportIcon },
     { label: 'Invoices', href: '/family/invoices', icon: WalletIcon },
+    { label: 'Messages', href: '/family/messages', icon: ChatIcon },
     { label: 'Notifications', href: '/family/notifications', icon: BellIcon, badge: '2' },
 ];
 </script>

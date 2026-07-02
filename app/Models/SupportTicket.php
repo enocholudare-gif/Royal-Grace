@@ -15,6 +15,7 @@ class SupportTicket extends Model
         'user_id',
         'booking_id',
         'assigned_to',
+        'category',
         'subject',
         'description',
         'priority',
@@ -42,5 +43,15 @@ class SupportTicket extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(SupportTicketMessage::class);
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(SupportTicketAttachment::class);
     }
 }

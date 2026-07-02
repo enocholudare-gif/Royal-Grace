@@ -30,12 +30,19 @@ Route::middleware('auth')->group(function (): void {
     // Dashboard Data Endpoints
     Route::get('/bookings', [BookingController::class, 'index'])->name('frontend.bookings.index');
     Route::get('/payments', [PaymentController::class, 'index'])->name('frontend.payments.index');
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('frontend.notifications.index');
+    Route::prefix('api/notifications')->name('frontend.notifications.')->group(function (): void {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
+        Route::patch('/read', [NotificationController::class, 'markRead'])->name('mark-read');
+        Route::patch('/read-all', [NotificationController::class, 'markAllRead'])->name('mark-all-read');
+        Route::delete('/bulk', [NotificationController::class, 'bulkDestroy'])->name('bulk-destroy');
+        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+    });
     Route::get('/visits', [VisitController::class, 'index'])->name('frontend.visits.index');
     Route::get('/calendar/events', [\App\Http\Controllers\Calendar\CalendarController::class, 'index'])->name('frontend.calendar.events');
 
-    // Family Portal Dashboard Endpoints
-    Route::prefix('family')->name('frontend.family.')->group(function (): void {
+    // Family Portal Dashboard API Endpoints
+    Route::middleware('role:family-member')->prefix('api/family')->name('api.family.')->group(function (): void {
         Route::get('/bookings', [FamilyPortalController::class, 'upcomingBookings'])->name('bookings.index');
         Route::get('/visits', [FamilyPortalController::class, 'completedVisits'])->name('visits.index');
         Route::get('/invoices', [FamilyPortalController::class, 'invoices'])->name('invoices.index');
@@ -62,9 +69,27 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/caregivers/{caregiver}/attendance', [\App\Http\Controllers\CaregiverManagement\CaregiverController::class, 'recordAttendance'])->name('frontend.caregivers.attendance.store');
     Route::post('/caregivers/{caregiver}/availability', [\App\Http\Controllers\CaregiverManagement\CaregiverController::class, 'createAvailability'])->name('frontend.caregivers.availability.store');
 
+    // Clients
+    Route::get('/clients/search', [\App\Http\Controllers\ClientManagement\ClientController::class, 'index'])->name('frontend.clients.search');
+    Route::get('/clients', [\App\Http\Controllers\ClientManagement\ClientController::class, 'index'])->name('frontend.clients.index');
+    Route::post('/clients', [\App\Http\Controllers\ClientManagement\ClientController::class, 'store'])->name('frontend.clients.store');
+    Route::get('/clients/{client}', [\App\Http\Controllers\ClientManagement\ClientController::class, 'show'])->name('frontend.clients.show');
+    Route::put('/clients/{client}', [\App\Http\Controllers\ClientManagement\ClientController::class, 'update'])->name('frontend.clients.update');
+    Route::delete('/clients/{client}', [\App\Http\Controllers\ClientManagement\ClientController::class, 'destroy'])->name('frontend.clients.destroy');
+    Route::patch('/clients/{id}/restore', [\App\Http\Controllers\ClientManagement\ClientController::class, 'restore'])->name('frontend.clients.restore');
+    Route::get('/clients/{client}/bookings', [\App\Http\Controllers\ClientManagement\ClientController::class, 'bookings'])->name('frontend.clients.bookings');
+    Route::get('/clients/{client}/payments', [\App\Http\Controllers\ClientManagement\ClientController::class, 'payments'])->name('frontend.clients.payments');
+    Route::get('/clients/{client}/visit-reports', [\App\Http\Controllers\ClientManagement\ClientController::class, 'visitReports'])->name('frontend.clients.visit-reports');
+    Route::get('/clients/{client}/family-members', [\App\Http\Controllers\ClientManagement\ClientController::class, 'familyMembers'])->name('frontend.clients.family-members');
+    Route::post('/clients/{client}/attachments', [\App\Http\Controllers\ClientManagement\ClientController::class, 'uploadAttachment'])->name('frontend.clients.attachments.store');
+
     // Payments (Write)
     Route::post('/payments/bookings/{booking}/initialize', [PaymentController::class, 'initializeBookingPayment'])->name('frontend.payments.booking.initialize');
     Route::post('/payments/verify', [PaymentController::class, 'verify'])->name('frontend.payments.verify');
+    
+    // Stripe Payments
+    Route::post('/payments/intent', [\App\Http\Controllers\Api\PaymentController::class, 'intent'])->name('api.payments.intent');
+    Route::post('/payments/confirm', [\App\Http\Controllers\Api\PaymentController::class, 'confirm'])->name('api.payments.confirm');
 
     // Messaging
     Route::prefix('messages')->name('frontend.messages.')->group(function (): void {
@@ -74,5 +99,35 @@ Route::middleware('auth')->group(function (): void {
         Route::patch('/conversations/{conversation}/read', [\App\Http\Controllers\Messaging\ConversationController::class, 'markRead'])->name('conversations.read');
         Route::get('/conversations/{conversation}/messages', [\App\Http\Controllers\Messaging\MessageController::class, 'index'])->name('history');
         Route::post('/conversations/{conversation}/messages', [\App\Http\Controllers\Messaging\MessageController::class, 'store'])->name('send');
+    });
+
+    // Reports
+    Route::middleware('role:admin,super-admin')->prefix('reports')->name('frontend.reports.')->group(function (): void {
+        Route::get('/dashboard', [\App\Http\Controllers\ReportManagement\ReportController::class, 'dashboard'])->name('dashboard');
+        Route::get('/revenue', [\App\Http\Controllers\ReportManagement\ReportController::class, 'revenue'])->name('revenue');
+        Route::get('/bookings', [\App\Http\Controllers\ReportManagement\ReportController::class, 'bookings'])->name('bookings');
+        Route::get('/caregivers', [\App\Http\Controllers\ReportManagement\ReportController::class, 'caregivers'])->name('caregivers');
+        Route::get('/clients', [\App\Http\Controllers\ReportManagement\ReportController::class, 'clients'])->name('clients');
+        Route::post('/export/pdf', [\App\Http\Controllers\ReportManagement\ReportController::class, 'exportPdf'])->name('export.pdf');
+        Route::post('/export/excel', [\App\Http\Controllers\ReportManagement\ReportController::class, 'exportExcel'])->name('export.excel');
+    });
+
+    // Ratings
+    Route::prefix('ratings')->name('frontend.ratings.')->group(function (): void {
+        Route::get('/', [\App\Http\Controllers\Ratings\RatingController::class, 'index'])->name('index');
+        Route::get('/history', [\App\Http\Controllers\Ratings\RatingController::class, 'index'])->name('history'); // same controller logic
+        Route::get('/statistics', [\App\Http\Controllers\Ratings\RatingController::class, 'statistics'])->name('statistics');
+        Route::get('/{rating}', [\App\Http\Controllers\Ratings\RatingController::class, 'show'])->name('show');
+        Route::post('/', [\App\Http\Controllers\Ratings\RatingController::class, 'store'])->name('store');
+    });
+
+    // Support Center
+    Route::prefix('support')->name('frontend.support.')->group(function (): void {
+        Route::get('/faq', [\App\Http\Controllers\API\Support\SupportController::class, 'faqs'])->name('faqs');
+        Route::get('/', [\App\Http\Controllers\API\Support\SupportController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\API\Support\SupportController::class, 'store'])->name('store');
+        Route::get('/{id}', [\App\Http\Controllers\API\Support\SupportController::class, 'show'])->name('show');
+        Route::put('/{id}', [\App\Http\Controllers\API\Support\SupportController::class, 'update'])->name('update');
+        Route::post('/{id}/reply', [\App\Http\Controllers\API\Support\SupportController::class, 'reply'])->name('reply');
     });
 });

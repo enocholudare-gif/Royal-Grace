@@ -12,16 +12,31 @@ class DemoUserSeeder extends Seeder
 {
     public function run(RegisterUserService $service): void
     {
-        // 1. Create Admin (doesn't need profile via RegisterUserService typically, but we can just create it manually)
-        $adminRole = Role::where('slug', 'super-admin')->first() ?? Role::where('slug', 'admin')->first();
+        // 1. Create Super Admin
+        $superAdminRole = Role::where('slug', 'super-admin')->first();
+        if ($superAdminRole) {
+            User::firstOrCreate(
+                ['email' => 'super@example.com'],
+                [
+                    'role_id' => $superAdminRole->id,
+                    'first_name' => 'Super',
+                    'last_name' => 'Admin',
+                    'password' => Hash::make('superpassword'),
+                    'status' => 'active',
+                ]
+            );
+        }
+
+        // 1.5 Create Regular Admin
+        $adminRole = Role::where('slug', 'admin')->first();
         if ($adminRole) {
             User::firstOrCreate(
                 ['email' => 'admin@example.com'],
                 [
                     'role_id' => $adminRole->id,
-                    'first_name' => 'Admin',
-                    'last_name' => 'User',
-                    'password' => Hash::make('password'),
+                    'first_name' => 'Regular',
+                    'last_name' => 'Admin',
+                    'password' => Hash::make('adminpassword'),
                     'status' => 'active',
                 ]
             );

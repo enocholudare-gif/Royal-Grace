@@ -59,7 +59,7 @@ class PaymentManagementTest extends TestCase
             'provider' => 'paystack',
             'status' => 'processing',
             'payment_type' => 'one_time',
-            'currency' => 'NGN',
+            'currency' => 'CAD',
         ]);
     }
 
@@ -271,7 +271,7 @@ class PaymentManagementTest extends TestCase
             'provider_payment_intent_id' => 'RG-PAY-' . uniqid(),
             'provider_charge_id' => null,
             'amount' => $booking->total_amount,
-            'currency' => 'NGN',
+            'currency' => 'CAD',
             'status' => 'processing',
             'payment_type' => 'one_time',
             'metadata' => [],

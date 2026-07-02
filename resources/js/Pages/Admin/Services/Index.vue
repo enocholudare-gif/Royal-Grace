@@ -36,7 +36,7 @@ const filtered = computed(() => {
 
 // --- Helpers ---
 const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(price);
+    return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(price);
 };
 
 // --- Data fetching ---

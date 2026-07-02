@@ -42,6 +42,9 @@ class BookingCancelledNotification extends BaseQueuedNotification
     {
         return [
             'type' => $this->notificationType(),
+            'title' => 'Booking Cancelled',
+            'description' => "Booking {$this->booking->booking_number} has been cancelled.",
+            'url' => "/family/bookings",
             'booking_id' => $this->booking->id,
             'booking_number' => $this->booking->booking_number,
             'reason' => $this->booking->cancellation_reason,

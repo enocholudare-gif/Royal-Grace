@@ -1,10 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', fn () => Inertia::render('Landing'))->name('home');
+
+Route::middleware(['auth'])->get('/dashboard', function () {
+    $role = auth()->user()->role ?? null;
+    if ($role === 'client') {
+        return redirect()->route('frontend.client.dashboard');
+    } elseif ($role === 'caregiver') {
+        return redirect()->route('frontend.caregiver.dashboard');
+    } elseif ($role === 'family-member') {
+        return redirect()->route('frontend.family.dashboard');
+    }
+    
+    return redirect('/');
+})->name('dashboard');
 
 require __DIR__.'/frontend_auth.php';
 require __DIR__.'/frontend_dashboard.php';
