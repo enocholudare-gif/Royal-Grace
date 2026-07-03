@@ -379,7 +379,7 @@ function ConversationPanel({ ticket, onStatusChange }: {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AdminSupportIndex() {
-    const { tickets, loading, currentTicket, fetchTickets, fetchTicketDetails } = useSupportStore();
+    const { tickets, loading, ticketLoading, currentTicket, fetchTickets, fetchTicketDetails } = useSupportStore();
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [search, setSearch] = useState('');
     const [filters, setFilters] = useState({ status: 'all', priority: 'all', category: 'all' });
@@ -496,7 +496,12 @@ export default function AdminSupportIndex() {
 
                 {/* ── RIGHT: Conversation ── */}
                 <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden">
-                    {currentTicket && selectedId === currentTicket.id ? (
+                    {selectedId && ticketLoading ? (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <RefreshCw className="w-8 h-8 animate-spin mb-3 text-emerald-500" />
+                            <p className="text-sm text-gray-500">Loading ticket...</p>
+                        </div>
+                    ) : currentTicket && selectedId === currentTicket.id ? (
                         <ConversationPanel
                             ticket={currentTicket}
                             onStatusChange={() => fetchTickets(1, filters)}

@@ -4,7 +4,7 @@ export interface User {
     id: number;
     first_name: string;
     last_name: string;
-    role?: string;
+    role?: { slug: string; name?: string } | string;
     role_slug?: string;
     avatar_url?: string;
 }
@@ -60,6 +60,7 @@ interface SupportState {
     currentTicket: Ticket | null;
     faqs: Faq[];
     loading: boolean;
+    ticketLoading: boolean;
     error: string | null;
     currentPage: number;
     totalPages: number;
@@ -78,6 +79,7 @@ export const useSupportStore = create<SupportState>((set, get) => ({
     currentTicket: null,
     faqs: [],
     loading: false,
+    ticketLoading: false,
     error: null,
     currentPage: 1,
     totalPages: 1,
@@ -107,12 +109,13 @@ export const useSupportStore = create<SupportState>((set, get) => ({
     },
 
     fetchTicketDetails: async (id: number) => {
-        set({ loading: true, error: null, currentTicket: null });
+        set({ ticketLoading: true, error: null });
         try {
             const response = await window.axios.get(`/support/${id}`);
-            set({ currentTicket: response.data, loading: false });
+            const ticket = response.data?.data ?? response.data;
+            set({ currentTicket: ticket, ticketLoading: false });
         } catch (error: any) {
-            set({ error: error.response?.data?.message || 'Failed to fetch ticket details', loading: false });
+            set({ error: error.response?.data?.message || 'Failed to fetch ticket details', ticketLoading: false });
         }
     },
 
