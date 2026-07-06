@@ -17,7 +17,7 @@ export default function ClientLayout({ children, title = 'Client Portal', descri
     const navigation = [
         { label: 'Overview', href: '/client/dashboard', icon: HomeIcon },
         { label: 'Bookings', href: '/client/bookings', icon: CalendarIcon },
-        { label: 'Care Plans', href: '/client/services', icon: HeartIcon },
+        { label: 'Book a Service', href: '/client/services', icon: HeartIcon },
         { label: 'Invoices', href: '/client/invoices', icon: WalletIcon },
         { label: 'Reports', href: '/client/reports', icon: FileIcon },
         { label: 'My Reviews', href: '/client/ratings', icon: StarIcon },

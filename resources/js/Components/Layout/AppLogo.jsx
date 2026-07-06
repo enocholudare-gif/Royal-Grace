@@ -21,8 +21,8 @@ export default function AppLogo() {
             </div>
 
             <div>
-                <p className="font-heading text-base font-semibold text-text">Royal Grace</p>
-                <p className="text-xs text-text-soft">Care Management Platform</p>
+                <p className="font-heading text-base font-semibold text-white">Royal Grace</p>
+                <p className="text-xs text-white/80">Care Management Platform</p>
             </div>
         </div>
     );

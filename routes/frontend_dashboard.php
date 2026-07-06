@@ -40,6 +40,19 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/admin/ratings', fn () => Inertia::render('Admin/Ratings/Index'))->name('frontend.admin.ratings');
         Route::get('/admin/support', fn () => Inertia::render('Admin/Support/Index'))->name('frontend.admin.support');
         Route::get('/admin/support/{ticket}', fn ($ticket) => Inertia::render('Shared/Support/Show', ['ticketId' => $ticket]))->name('frontend.admin.support.show');
+        
+        // Bank Accounts
+        Route::get('/admin/bank-accounts', [\App\Http\Controllers\Admin\BankAccountController::class, 'index'])->name('frontend.admin.bank-accounts.index');
+        Route::post('/admin/bank-accounts', [\App\Http\Controllers\Admin\BankAccountController::class, 'store'])->name('frontend.admin.bank-accounts.store');
+        Route::put('/admin/bank-accounts/{bankAccount}', [\App\Http\Controllers\Admin\BankAccountController::class, 'update'])->name('frontend.admin.bank-accounts.update');
+        Route::delete('/admin/bank-accounts/{bankAccount}', [\App\Http\Controllers\Admin\BankAccountController::class, 'destroy'])->name('frontend.admin.bank-accounts.destroy');
+
+        // Admin Payments
+        Route::get('/admin/payments/pending', [\App\Http\Controllers\Admin\PaymentApprovalController::class, 'index'])->name('frontend.admin.payments.pending');
+        Route::get('/admin/payments/{submission}', [\App\Http\Controllers\Admin\PaymentApprovalController::class, 'show'])->name('frontend.admin.payments.show');
+        Route::post('/admin/payments/{submission}/approve', [\App\Http\Controllers\Admin\PaymentApprovalController::class, 'approve'])->name('frontend.admin.payments.approve');
+        Route::post('/admin/payments/{submission}/reject', [\App\Http\Controllers\Admin\PaymentApprovalController::class, 'reject'])->name('frontend.admin.payments.reject');
+        Route::get('/admin/payments/{submission}/receipt', [\App\Http\Controllers\Admin\PaymentApprovalController::class, 'downloadReceipt'])->name('frontend.admin.payments.download-receipt');
     });
 
     // Super Admin Only Routes
@@ -81,13 +94,17 @@ Route::middleware('auth')->group(function (): void {
     Route::middleware('role:client')->prefix('client')->name('frontend.client.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\ClientPortal\ClientPortalController::class, 'dashboard'])->name('dashboard');
         Route::get('/bookings', [\App\Http\Controllers\ClientPortal\ClientPortalController::class, 'bookings'])->name('bookings');
+        Route::post('/bookings', [\App\Http\Controllers\Client\BookingController::class, 'store'])->name('bookings.store');
         Route::get('/services', [\App\Http\Controllers\ClientPortal\ClientPortalController::class, 'services'])->name('services');
         Route::post('/services/request', [\App\Http\Controllers\ClientPortal\ClientPortalController::class, 'storeServiceRequest'])->name('services.request');
         Route::get('/bookings/{booking}/pay', function (\App\Models\Booking $booking) {
             $booking->load('service');
             return Inertia::render('Client/Bookings/Pay', ['booking' => $booking]);
         })->name('bookings.pay');
-        Route::get('/invoices', [\App\Http\Controllers\ClientPortal\ClientPortalController::class, 'invoices'])->name('invoices');
+        Route::get('/invoices', [\App\Http\Controllers\Client\InvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('/invoices/{invoice}/pay', [\App\Http\Controllers\Client\PaymentController::class, 'makePayment'])->name('invoices.pay');
+        Route::get('/invoices/{invoice}/download', [\App\Http\Controllers\Client\PaymentController::class, 'downloadInvoice'])->name('invoices.download');
+        Route::post('/invoices/{invoice}/submit-receipt', [\App\Http\Controllers\Client\PaymentController::class, 'submitReceipt'])->name('invoices.submit-receipt');
         Route::get('/reports', [\App\Http\Controllers\ClientPortal\ClientPortalController::class, 'reports'])->name('reports');
         Route::get('/ratings', fn () => Inertia::render('Client/Ratings/History'))->name('ratings.history');
         Route::get('/ratings/submit/{booking}', function (\App\Models\Booking $booking) {

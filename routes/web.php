@@ -6,8 +6,13 @@ use Inertia\Inertia;
 Route::get('/', fn () => Inertia::render('Landing'))->name('home');
 
 Route::middleware(['auth'])->get('/dashboard', function () {
-    $role = auth()->user()->role ?? null;
-    if ($role === 'client') {
+    $role = auth()->user()->role_slug;
+    
+    if ($role === 'super-admin') {
+        return redirect()->route('frontend.super-admin.dashboard');
+    } elseif ($role === 'admin') {
+        return redirect()->route('frontend.admin.dashboard');
+    } elseif ($role === 'client') {
         return redirect()->route('frontend.client.dashboard');
     } elseif ($role === 'caregiver') {
         return redirect()->route('frontend.caregiver.dashboard');

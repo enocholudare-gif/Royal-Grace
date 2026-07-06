@@ -32,7 +32,8 @@ class RegisterUserService
                 'email' => $data['email'],
                 'phone' => $data['phone'] ?? null,
                 'password' => Hash::make($data['password']),
-                'status' => 'pending_verification',
+                'status' => 'active',
+                'email_verified_at' => now(),
             ]);
 
             $this->createProfileForRole($user, $data);

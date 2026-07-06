@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AuthCard from '../../Components/Auth/AuthCard';
 import AuthInput from '../../Components/Auth/AuthInput';
 import AuthAlert from '../../Components/Auth/AuthAlert';
 import GuestLayout from '../../Layouts/GuestLayout';
 
 export default function ForgotPassword() {
+    const { appUrl } = usePage().props;
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     });
@@ -17,7 +18,7 @@ export default function ForgotPassword() {
         e.preventDefault();
         setMessage('');
 
-        post('/forgot-password', {
+        post(`${appUrl}/forgot-password`, {
             onSuccess: (page) => {
                 setMessage(page.props?.flash?.success || 'Password reset link sent successfully.');
                 setMessageTone('success');

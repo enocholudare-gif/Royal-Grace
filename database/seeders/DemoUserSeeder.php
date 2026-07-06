@@ -16,12 +16,12 @@ class DemoUserSeeder extends Seeder
         $superAdminRole = Role::where('slug', 'super-admin')->first();
         if ($superAdminRole) {
             User::firstOrCreate(
-                ['email' => 'super@example.com'],
+                ['email' => 'admin@rgcareservices.com'],
                 [
                     'role_id' => $superAdminRole->id,
                     'first_name' => 'Super',
                     'last_name' => 'Admin',
-                    'password' => Hash::make('superpassword'),
+                    'password' => Hash::make('admin1234#'),
                     'status' => 'active',
                 ]
             );

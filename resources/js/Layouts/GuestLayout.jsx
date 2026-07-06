@@ -11,7 +11,7 @@ export default function GuestLayout({ children, title = 'Welcome', subtitle = 'C
                             <AppLogo />
 
                             <div className="mt-10 max-w-xl space-y-5">
-                                <span className="badge bg-white/20 text-white">Healthcare SaaS</span>
+                                <span className="badge bg-white/20 text-white hidden">Healthcare</span>
                                 <h1 className="text-4xl font-semibold text-white">{title}</h1>
                                 <p className="text-base leading-7 text-brand-100">
                                     {subtitle}

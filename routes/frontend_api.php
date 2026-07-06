@@ -86,6 +86,27 @@ Route::middleware('auth')->group(function (): void {
     // Payments (Write)
     Route::post('/payments/bookings/{booking}/initialize', [PaymentController::class, 'initializeBookingPayment'])->name('frontend.payments.booking.initialize');
     Route::post('/payments/verify', [PaymentController::class, 'verify'])->name('frontend.payments.verify');
+
+    // Bank Transfer Admin Routes
+    Route::middleware('role:admin,super-admin')->group(function () {
+        Route::get('/admin/invoices/pending-transfers', function () {
+            $invoices = \App\Models\Invoice::with(['booking.client.user'])
+                ->where('status', 'pending_verification')
+                ->where('payment_method', 'bank_transfer')
+                ->orderBy('payment_submitted_at', 'asc')
+                ->get();
+            return response()->json($invoices);
+        })->name('admin.invoices.pending-transfers');
+
+        Route::post('/admin/invoices/{invoice}/approve-transfer', function (\App\Models\Invoice $invoice) {
+            abort_unless($invoice->status === 'pending_verification', 422, 'Invoice is not pending verification.');
+            $invoice->update([
+                'status' => 'paid',
+                'paid_at' => now(),
+            ]);
+            return response()->json(['message' => 'Invoice approved and marked as paid.']);
+        })->name('admin.invoices.approve-transfer');
+    });
     
     // Stripe Payments
     Route::post('/payments/intent', [\App\Http\Controllers\Api\PaymentController::class, 'intent'])->name('api.payments.intent');

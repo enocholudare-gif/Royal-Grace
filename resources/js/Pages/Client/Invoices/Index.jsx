@@ -1,83 +1,74 @@
 import React from 'react';
-import { Head } from '@inertiajs/react';
-import ClientLayout from '../../../Layouts/ClientLayout';
+import { Head, Link } from '@inertiajs/react';
+import ClientLayout from '@/Layouts/ClientLayout';
+import { FileText, CreditCard, Clock, AlertCircle } from 'lucide-react';
 
-export default function Index({ invoices }) {
-    const formatDate = (dateString) => {
-        if (!dateString) return '—';
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric', month: 'short', day: 'numeric'
-        });
-    };
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(price);
-    };
-
+export default function Index({ auth, invoices }) {
     return (
-        <>
-            <Head title="Invoices" />
-            
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-text">Invoices & Billing</h1>
-                    <p className="mt-1 text-sm text-text-muted">
-                        Review your billing history and download past invoices.
-                    </p>
-                </div>
+        <ClientLayout user={auth.user} header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">My Invoices</h2>}>
+            <Head title="My Invoices" />
 
-                <div className="card overflow-hidden">
-                    {invoices && invoices.length > 0 ? (
-                        <table className="table-standard w-full">
-                            <thead>
-                                <tr>
-                                    <th>Invoice #</th>
-                                    <th>Date Issued</th>
-                                    <th>Due Date</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th className="text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {invoices.map(invoice => (
-                                    <tr key={invoice.id}>
-                                        <td className="font-medium text-text">{invoice.invoice_number}</td>
-                                        <td>{formatDate(invoice.created_at)}</td>
-                                        <td>{formatDate(invoice.due_date)}</td>
-                                        <td className="font-medium text-text">{formatPrice(invoice.total_amount)}</td>
-                                        <td>
-                                            <span className={`status-indicator ${
-                                                invoice.status === 'paid' ? 'status-active' :
-                                                invoice.status === 'overdue' ? 'status-danger' : 'status-warning'
-                                            }`}>
-                                                {invoice.status}
-                                            </span>
-                                        </td>
-                                        <td className="text-right">
-                                            <a href={`/storage/${invoice.pdf_path}`} target="_blank" rel="noreferrer" className="text-brand-600 hover:text-brand-700 text-sm font-medium">
-                                                Download PDF
-                                            </a>
-                                        </td>
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice #</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <div className="p-10 text-center flex flex-col items-center">
-                            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            </div>
-                            <h2 className="text-lg font-bold text-text mb-2">No Invoices Yet</h2>
-                            <p className="text-text-muted max-w-md">
-                                You currently have no pending or past invoices. All your billing history will be securely stored here.
-                            </p>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {invoices.data.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="5" className="px-6 py-4 text-center text-gray-500">You have no invoices yet.</td>
+                                        </tr>
+                                    ) : invoices.data.map((invoice) => (
+                                        <tr key={invoice.id}>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {invoice.invoice_number}
+                                                <div className="text-xs text-gray-500 font-normal">Due: {invoice.due_date}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {invoice.booking?.service?.name || 'Service Package'}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                                                ${invoice.total_amount}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${['paid', 'issued'].includes(invoice.status) ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                    {invoice.status.replace('_', ' ').toUpperCase()}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                {(invoice.status === 'draft' || invoice.status === 'rejected') && (
+                                                    <Link href={`/client/invoices/${invoice.id}/pay`} className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-900">
+                                                        <CreditCard size={16} /> Pay Now
+                                                    </Link>
+                                                )}
+                                                {invoice.status === 'payment_submitted' && (
+                                                    <span className="inline-flex items-center gap-1 text-gray-500">
+                                                        <Clock size={16} /> Under Review
+                                                    </span>
+                                                )}
+                                                {invoice.status === 'paid' && (
+                                                    <a href={`/client/invoices/${invoice.id}/download`} className="inline-flex items-center gap-1 text-green-600 hover:text-green-900">
+                                                        <FileText size={16} /> Download
+                                                    </a>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
-        </>
+        </ClientLayout>
     );
 }
-
-Index.layout = page => <ClientLayout title="Invoices" description="Manage your billing, payments, and view past invoices.">{page}</ClientLayout>;

@@ -22,6 +22,10 @@ class Invoice extends Model
         'status',
         'pdf_path',
         'paid_at',
+        'payment_method',
+        'bank_transfer_note',
+        'payment_submitted_at',
+        'approved_by',
     ];
 
     protected function casts(): array
@@ -33,6 +37,7 @@ class Invoice extends Model
             'tax_amount' => 'decimal:2',
             'total_amount' => 'decimal:2',
             'paid_at' => 'datetime',
+            'payment_submitted_at' => 'datetime',
         ];
     }
 
@@ -44,5 +49,15 @@ class Invoice extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function submissions(): HasMany
+    {
+        return $this->hasMany(PaymentSubmission::class);
+    }
+
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

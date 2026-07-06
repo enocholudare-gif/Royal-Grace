@@ -31,6 +31,8 @@ export default function AdminLayout({ children, title = 'Admin Dashboard', descr
         { label: 'Services', href: '/admin/services', icon: ServiceIcon },
         { label: 'Caregivers', href: '/admin/caregivers', icon: UsersIcon },
         { label: 'Clients', href: '/admin/clients', icon: HeartIcon },
+        { label: 'Bank Accounts', href: '/admin/bank-accounts', icon: WalletIcon },
+        { label: 'Pending Payments', href: '/admin/payments/pending', icon: WalletIcon },
         { label: 'Payments', href: '/admin/payments', icon: WalletIcon },
         { label: 'Reports', href: '/admin/reports', icon: ReportIcon },
         { label: 'Reviews', href: '/admin/ratings', icon: StarIcon },

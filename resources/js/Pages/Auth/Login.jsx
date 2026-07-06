@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 import AuthCard from '../../Components/Auth/AuthCard';
 import AuthInput from '../../Components/Auth/AuthInput';
@@ -8,6 +8,7 @@ import AuthAlert from '../../Components/Auth/AuthAlert';
 import GuestLayout from '../../Layouts/GuestLayout';
 
 export default function Login() {
+    const { appUrl } = usePage().props;
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
@@ -21,7 +22,7 @@ export default function Login() {
         e.preventDefault();
         setMessage('');
 
-        post('/login', {
+        post(`${appUrl}/login`, {
             onSuccess: (page) => {
                 const token = page.props?.token; // If token is passed via props
                 if (token) {

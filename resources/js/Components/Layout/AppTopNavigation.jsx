@@ -59,7 +59,7 @@ export default function AppTopNavigation({ title = 'Dashboard', description = ''
                             method="post"
                             as="button"
                             type="button"
-                            className="btn-primary btn-sm hidden md:inline-flex"
+                            className="btn-primary btn-sm ml-2"
                         >
                             Logout
                         </Link>

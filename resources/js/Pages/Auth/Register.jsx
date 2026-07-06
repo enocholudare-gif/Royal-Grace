@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AuthCard from '../../Components/Auth/AuthCard';
 import AuthAlert from '../../Components/Auth/AuthAlert';
 import AuthInput from '../../Components/Auth/AuthInput';
@@ -8,6 +8,7 @@ import AuthSelect from '../../Components/Auth/AuthSelect';
 import GuestLayout from '../../Layouts/GuestLayout';
 
 export default function Register() {
+    const { appUrl } = usePage().props;
     const roleOptions = [
         { value: 'client', label: 'Client' },
         { value: 'family-member', label: 'Family Member' },
@@ -80,7 +81,7 @@ export default function Register() {
         }
 
         // We can just use the standard inertia post, which handles tokens if configured.
-        post('/register', {
+        post(`${appUrl}/register`, {
             onSuccess: (page) => {
                 const token = page.props?.token;
                 if (token) {

@@ -130,4 +130,30 @@ class ClientPortalController extends Controller
             'reports' => $reports
         ]);
     }
+
+    public function submitBankTransfer(Request $request, Invoice $invoice)
+    {
+        $client = $this->getClient();
+
+        abort_unless(
+            $invoice->booking && $invoice->booking->client_id === $client->id,
+            403
+        );
+
+        abort_unless(
+            in_array($invoice->status, ['pending', 'issued', 'overdue']),
+            422,
+            'This invoice cannot be marked as transferred.'
+        );
+
+        $invoice->update([
+            'status' => 'pending_verification',
+            'payment_method' => 'bank_transfer',
+            'bank_transfer_note' => $request->input('note'),
+            'payment_submitted_at' => now(),
+        ]);
+
+        return back()->with('success', 'Transfer submitted! Your payment is pending verification by the admin.');
+    }
 }
+
