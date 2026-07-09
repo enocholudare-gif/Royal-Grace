@@ -50,10 +50,7 @@ export default function Login() {
         <>
             <Head title="Login" />
 
-            <AuthCard
-                title="Welcome back"
-                subtitle="Sign in to manage bookings, care updates, payments, and communication."
-            >
+            <AuthCard>
                 {message && (
                     <AuthAlert
                         tone={messageTone}

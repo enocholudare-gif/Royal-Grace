@@ -420,9 +420,12 @@ export default function Register() {
                     )}
 
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-4">
-                        <Link href="/login" className="btn-link">
-                            Already have an account?
-                        </Link>
+                        <span className="text-sm text-text-muted">
+                            Already have an account?{' '}
+                            <Link href="/login" className="font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-900 transition-colors">
+                                Sign In
+                            </Link>
+                        </span>
 
                         <button type="submit" className="btn-primary" disabled={processing}>
                             {processing ? 'Creating account...' : 'Create account'}

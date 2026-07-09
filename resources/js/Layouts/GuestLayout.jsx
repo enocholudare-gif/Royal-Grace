@@ -8,10 +8,10 @@ export default function GuestLayout({ children, title = 'Welcome', subtitle = 'C
                 <div className="mx-auto w-full max-w-6xl">
                     <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
                         <section className="hidden rounded-[2rem] bg-brand-900 p-10 text-white shadow-lg lg:block">
-                            <AppLogo />
+                            {/* Real logo — on dark navy background */}
+                            <AppLogo dark={true} size="lg" />
 
                             <div className="mt-10 max-w-xl space-y-5">
-                                <span className="badge bg-white/20 text-white hidden">Healthcare</span>
                                 <h1 className="text-4xl font-semibold text-white">{title}</h1>
                                 <p className="text-base leading-7 text-brand-100">
                                     {subtitle}
@@ -32,8 +32,9 @@ export default function GuestLayout({ children, title = 'Welcome', subtitle = 'C
 
                         <section className="mx-auto w-full max-w-xl rounded-[2rem] border border-border bg-surface p-6 shadow-lg sm:p-8">
                             <div className="mb-6 lg:hidden">
-                                <AppLogo />
-                                <h1 className="mt-6 text-3xl font-semibold text-text">{title}</h1>
+                                {/* Mobile logo — on white card background */}
+                                <AppLogo dark={false} size="sm" />
+                                <h1 className="text-3xl font-semibold text-text">{title}</h1>
                                 <p className="mt-2 text-sm text-text-muted">{subtitle}</p>
                             </div>
 
