@@ -185,12 +185,12 @@ export default function Landing() {
     ];
 
     const services = [
-        { title: 'Companion Care', icon: Users, desc: 'Warm, meaningful companionship to combat loneliness, spark joy, and nurture mental well-being through genuine human connection.', color: C.gold },
-        { title: 'Wellness Support', icon: Activity, desc: 'Structured wellness routines, light exercise encouragement, cognitive stimulation, and healthy habit-building for a vibrant lifestyle.', color: C.sage },
-        { title: 'Daily Living Assistance', icon: Home, desc: 'Dignified help with personal care, meal preparation, medication reminders, and household tasks to keep daily life running smoothly.', color: C.gold },
-        { title: 'Transportation Assistance', icon: Car, desc: 'Dependable, door-to-door transport for appointments, errands, grocery trips, and social outings — always safe and on time.', color: C.sage },
-        { title: 'Family Relief Support', icon: HeartPulse, desc: 'Scheduled respite care that gives family caregivers a vital opportunity to rest, recharge, and return refreshed.', color: C.gold },
-        { title: 'Home Support Services', icon: ShieldCheck, desc: 'Professional light housekeeping, laundry, and organisation to maintain a clean, hazard-free, and comfortable home environment.', color: C.sage }
+        { title: 'Companion Care', icon: Users, desc: ['Conversation and companionship', 'Emotional support', 'Walks and social activities', 'Friendly wellness check-ins'], color: C.gold },
+        { title: 'Daily Living Assistance', icon: Home, desc: ['Assistance with dressing', 'Personal hygiene support', 'Routine assistance', 'Daily activity support'], color: C.gold },
+        { title: 'Wellness Support Services', icon: Activity, desc: ['Meal preparation', 'Hydration reminders', 'Wellness monitoring', 'Healthy routine support'], color: C.sage },
+        { title: 'Transportation Assistance', icon: Car, desc: ['Appointment transportation', 'Grocery shopping assistance', 'Pharmacy pickups', 'Community outings'], color: C.sage },
+        { title: 'Family Relief & Respite Support', icon: HeartPulse, desc: ['Temporary caregiver relief', 'Short-term companionship support', 'Evening and weekend assistance'], color: C.gold },
+        { title: 'Home Support Services', icon: ShieldCheck, desc: ['Light housekeeping', 'Laundry assistance', 'Home organization', 'General household support'], color: C.sage }
     ];
 
 
@@ -405,7 +405,11 @@ export default function Landing() {
                                             className="overflow-hidden"
                                         >
                                             <div className="px-8 pb-8 border-t border-gray-100 pt-4">
-                                                <p className="text-gray-500 leading-relaxed">{s.desc}</p>
+                                                <ul className="list-disc pl-5 text-gray-500 leading-relaxed space-y-2">
+                                                    {s.desc.map((item, idx) => (
+                                                        <li key={idx}>{item}</li>
+                                                    ))}
+                                                </ul>
                                             </div>
                                         </motion.div>
                                     )}
