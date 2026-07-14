@@ -103,10 +103,7 @@ export default function Register() {
         >
             <Head title="Register" />
 
-            <AuthCard
-                title="Create your account"
-                subtitle="Join Royal Grace to access coordinated care, family visibility, and secure communication."
-            >
+            <AuthCard>
                 {message && (
                     <AuthAlert
                         tone="danger"

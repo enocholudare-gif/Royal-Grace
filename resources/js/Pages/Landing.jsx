@@ -47,41 +47,44 @@ function SectionLabel({ text, light = false }) {
 
 const heroSlides = [
     {
-        url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1600&auto=format&fit=crop',
-        caption: 'Helping someone cross the road'
+        url: 'https://cdn.phototourl.com/free/2026-07-14-b255f613-a893-4aab-87a5-c1bf137a0daa.jpg',
+        caption: 'Companion Care',
+        title: 'Companion Care',
+        desc: 'Conversation and companionship • Emotional support • Walks and social activities • Friendly wellness check-ins'
     },
     {
-        url: 'https://images.unsplash.com/photo-1593113630400-ea4288922559?q=80&w=1600&auto=format&fit=crop',
-        caption: 'Feeding the hungry'
+        url: 'https://cdn.phototourl.com/free/2026-07-14-7a29c4a8-2bd7-4058-8f46-c95f2b7e0116.jpg',
+        caption: 'Daily Living Assistance',
+        title: 'Daily Living Assistance',
+        desc: 'Assistance with dressing • Personal hygiene support • Routine assistance • Daily activity support'
     },
     {
-        url: 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=1600&auto=format&fit=crop',
-        caption: 'Assisting elderly people'
+        url: 'https://cdn.phototourl.com/free/2026-07-14-93c92015-5db5-431c-b3ed-16b32a3e1390.jpg',
+        caption: 'Wellness Support Services',
+        title: 'Wellness Support Services',
+        desc: 'Meal preparation • Hydration reminders • Wellness monitoring • Healthy routine support'
     },
     {
-        url: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=1600&auto=format&fit=crop',
-        caption: 'Community volunteers in action'
+        url: 'https://cdn.phototourl.com/free/2026-07-14-9c8b4267-5651-49eb-bebb-f0e24318a452.jpg',
+        caption: 'Transportation Assistance',
+        title: 'Transportation Assistance',
+        desc: 'Appointment transportation • Grocery shopping assistance • Pharmacy pickups • Community outings'
     },
     {
-        url: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?q=80&w=1600&auto=format&fit=crop',
-        caption: 'Caring for people with disabilities'
+        url: 'https://cdn.phototourl.com/free/2026-07-14-51cd2603-51bb-4804-af38-737628c12a91.jpg',
+        caption: 'Family Relief & Respite Support',
+        title: 'Family Relief & Respite Support',
+        desc: 'Temporary caregiver relief • Short-term companionship support • Evening and weekend assistance'
     },
     {
-        url: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1600&auto=format&fit=crop',
-        caption: 'Acts of kindness and compassion'
-    },
-    {
-        url: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=1600&auto=format&fit=crop',
-        caption: 'Volunteers assisting others'
-    },
-    {
-        url: 'https://images.unsplash.com/photo-1531983412531-1f49a365ffed?q=80&w=1600&auto=format&fit=crop',
-        caption: 'General acts of compassion'
+        url: 'https://cdn.phototourl.com/free/2026-07-14-5534b45b-26ed-4993-939f-3a3ff6e39927.jpg',
+        caption: 'Home Support Services',
+        title: 'Home Support Services',
+        desc: 'Light housekeeping • Laundry assistance • Home organization • General household support'
     }
 ];
 
-function HeroCarousel() {
-    const [current, setCurrent] = useState(0);
+function HeroCarousel({ current, setCurrent }) {
     const [isTransitioning, setIsTransitioning] = useState(false);
     const timerRef = useRef(null);
 
@@ -90,7 +93,7 @@ function HeroCarousel() {
         setIsTransitioning(true);
         setCurrent(index);
         setTimeout(() => setIsTransitioning(false), 700);
-    }, [isTransitioning]);
+    }, [isTransitioning, setCurrent]);
 
     const next = useCallback(() => {
         goTo((current + 1) % heroSlides.length);
@@ -161,6 +164,7 @@ function HeroCarousel() {
 
 export default function Landing() {
     const { auth } = usePage().props;
+    const [currentSlide, setCurrentSlide] = useState(0);
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [openFaq, setOpenFaq] = useState(null);
@@ -309,7 +313,7 @@ export default function Landing() {
 
             {/* ── HERO CAROUSEL ── */}
             <section id="home" className="relative min-h-screen flex items-center pt-28 pb-24 overflow-hidden">
-                <HeroCarousel />
+                <HeroCarousel current={currentSlide} setCurrent={setCurrentSlide} />
 
                 <motion.div style={{ y: y1, opacity: opacity1 }} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
                     <div className="grid lg:grid-cols-12 gap-12 items-center">
@@ -322,14 +326,27 @@ export default function Landing() {
                                 Now serving Calgary &amp; surrounding areas
                             </motion.div>
                             <motion.h1 variants={fadeUp} className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-extrabold text-white leading-[1.03] tracking-tight mb-8" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}>
-                                Care that <br />
+                                Compassionate Support, <br />
                                 <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(135deg, ${C.gold}, ${C.goldLight})` }}>
-                                    restores dignity.
+                                    Trusted Care.
                                 </span>
                             </motion.h1>
-                            <motion.p variants={fadeUp} className="text-xl lg:text-2xl text-gray-100 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-12" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
-                                Royal Grace Care Services provides compassionate non-medical support and wellness-focused care designed to help individuals live comfortably, safely, and independently at home.
-                            </motion.p>
+                            <AnimatePresence mode="wait">
+                                <motion.div 
+                                    key={currentSlide}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <h2 className="text-2xl lg:text-3xl text-white font-bold mb-3 drop-shadow-md">
+                                        {heroSlides[currentSlide].title}
+                                    </h2>
+                                    <p className="text-lg lg:text-xl text-gray-100 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-12 drop-shadow-md">
+                                        {heroSlides[currentSlide].desc}
+                                    </p>
+                                </motion.div>
+                            </AnimatePresence>
                             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
                                 <a href="#contact" className="w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 shadow-[0_0_50px_rgba(212,175,55,0.4)] hover:shadow-[0_0_70px_rgba(212,175,55,0.6)] hover:-translate-y-1" style={{ backgroundColor: C.gold, color: C.navy }}>
                                     Book a Free Consultation <ArrowRight size={20} />

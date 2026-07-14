@@ -38,10 +38,7 @@ const handleSubmit = async () => {
 <template>
     <Head title="Reset Password" />
 
-    <AuthCard
-        title="Reset your password"
-        subtitle="Create a new secure password to continue using your account."
-    >
+    <AuthCard>
         <AuthAlert
             v-if="message"
             :tone="messageTone"

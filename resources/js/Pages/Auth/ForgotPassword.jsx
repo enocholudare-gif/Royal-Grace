@@ -41,10 +41,7 @@ export default function ForgotPassword() {
         >
             <Head title="Forgot Password" />
 
-            <AuthCard
-                title="Forgot your password?"
-                subtitle="Enter your email and we'll send you a secure reset link."
-            >
+            <AuthCard>
                 {message && (
                     <AuthAlert
                         tone={messageTone}

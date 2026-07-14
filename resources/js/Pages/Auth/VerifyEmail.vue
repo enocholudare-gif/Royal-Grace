@@ -66,10 +66,7 @@ const verifyEmail = async () => {
 <template>
     <Head title="Verify Email" />
 
-    <AuthCard
-        title="Verify your email"
-        subtitle="Protect your account by confirming your email address before continuing."
-    >
+    <AuthCard>
         <AuthAlert
             v-if="message"
             :tone="messageTone"
