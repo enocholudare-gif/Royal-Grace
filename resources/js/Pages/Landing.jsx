@@ -325,7 +325,7 @@ export default function Landing() {
                                 </span>
                                 Now serving Calgary &amp; surrounding areas
                             </motion.div>
-                            <motion.h1 variants={fadeUp} className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-extrabold text-white leading-[1.03] tracking-tight mb-8" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}>
+                            <motion.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-[1.03] tracking-tight mb-8" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}>
                                 Compassionate Support, <br />
                                 <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(135deg, ${C.gold}, ${C.goldLight})` }}>
                                     Trusted Care.
